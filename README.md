@@ -1,1 +1,3 @@
-# outage-severity-analysis
+We chose the Power Outages Dataframe as we feel that it is an important issue that affects the lives of many Americans, including ourselves and our loved ones. With people depending more and more on electrical implements inside their homes, power outages become more and more costly to the individuals affected. People would want to know how long outages will last, so that they can return to their normal lives.
+
+In our analysis, we investigated the question: **Which factors contribute the most to the severity of the power outage in terms of outage duration?**
