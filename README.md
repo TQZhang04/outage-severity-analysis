@@ -191,7 +191,7 @@ In our dataset, the `'OUTAGE DURATION'` column, which we are interested in as a 
 One way to check this is to look at the difference in the distributions of a column between rows where duration is missing and rows where it's present. This is demonstrated for `'CAUSE CATEGORY'` below.
 
 <iframe
-  src="Assets/missing_diff_cause.html.html"
+  src="Assets/missing_diff_cause.html"
   width="800"
   height="600"
   frameborder="0"
@@ -222,13 +222,48 @@ Let's run the same test on some other columns, to see if the missingness in Dura
 
 We can see that the distribution of month looks about the same regardless of the missingness of Duration. Let's see if that tiny difference is significant.
 
-Our results: P-value: 0.858
+Our results: 
+P-value: 0.858
 
 As expected, the p-value is high, beyond the chosen significance threshold of 0.05. This means that Outage Duration is Not Missing at Random (NMAR) in relation to Month.
 
 # Hypothesis Testing
 
+Question 1: Are the durations of outages in the East North Central region significantly longer than the overall population?
+Since we're interested in predicting Outage Duration as one metric for severity, it'd be helpful to know what factors affect this. In our EDA, we saw that the East North Central region had a higher median outage duration than other regions. This was backed up in our aggregate analysis. Is this a significant difference?
 
+Before running our hypothesis test, let's take a look at the data and see how different they really are.
+
+Our Results:
+Observed Difference: 3005.622585762335
+
+So in our observed data, there's a 3005 minute difference between the mean durations for ENC and other regions. Let's see if this difference is significant using a permutation test.
+
+H0: The mean duration of outages in the East North Central region is the same as the mean duration of outages in other regions.
+
+Ha: The mean duration of outages in the East North Central region longer than the mean duration of outages in other regions.
+Test statistic: Absolute Difference in Mean Duration between the ENC region and other regions.
+Significance level:  𝛼=0.05
+ 
+To do this we'll have to create a dataframe where one of the columns is binary, which takes on one value for "ENC" and another value for "not ENC".
+
+| CLIMATE REGION     |   OUTAGE DURATION | Region Binarized   |
+|:-------------------|------------------:|:-------------------|
+| East North Central |              3060 | East North Central |
+| East North Central |                 1 | East North Central |
+| East North Central |              3000 | East North Central |
+| East North Central |              2550 | East North Central |
+| East North Central |              1740 | East North Central |
+| West North Central |               720 | Other              |
+| West North Central |               nan | Other              |
+| West North Central |                59 | Other              |
+| West North Central |               181 | Other              |
+
+Our Results:
+
+P-value: 0.0
+
+From the results of our permutation test, we can conclude that we reject the null hypothesis. The mean duration in the East North Central region is significantly different from the mean duration in other regions.
 
 
 
