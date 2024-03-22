@@ -1,3 +1,4 @@
+## Note to Suraje- 
 # Introduction
 
 ## Background
@@ -31,16 +32,17 @@ Here is the head of our dataframe (Only included a few columns):
 ```py
 print(df.head().to_markdown(index=False))
 ```
-|    |   YEAR | U S STATE   | CLIMATE REGION     |   OUTAGE DURATION | CAUSE CATEGORY     |   CUSTOMERS AFFECTED |
-|---:|-------:|:------------|:-------------------|------------------:|:-------------------|---------------------:|
-|  1 |   2011 | Minnesota   | East North Central |              3060 | severe weather     |                70000 |
-|  2 |   2014 | Minnesota   | East North Central |                 1 | intentional attack |                  nan |
-|  3 |   2010 | Minnesota   | East North Central |              3000 | severe weather     |                70000 |
-|  4 |   2012 | Minnesota   | East North Central |              2550 | severe weather     |                68200 |
-|  5 |   2015 | Minnesota   | East North Central |              1740 | severe weather     |               250000 |
+|   YEAR | U S STATE   | CLIMATE REGION     |   OUTAGE DURATION | CAUSE CATEGORY     |   CUSTOMERS AFFECTED |
+|-------:|:------------|:-------------------|------------------:|:-------------------|---------------------:|
+|   2011 | Minnesota   | East North Central |              3060 | severe weather     |                70000 |
+|   2014 | Minnesota   | East North Central |                 1 | intentional attack |                  nan |
+|   2010 | Minnesota   | East North Central |              3000 | severe weather     |                70000 |
+|   2012 | Minnesota   | East North Central |              2550 | severe weather     |                68200 |
+|   2015 | Minnesota   | East North Central |              1740 | severe weather     |               250000 |
 
 # Univariate Analysis
-## Climate Region
+## Qualitative Variables:
+### Climate Region
 Which regions are most represented in our dataset? This could affect how we analyze our data, if certain regions are overrepresented.
 
 <iframe
@@ -52,7 +54,7 @@ Which regions are most represented in our dataset? This could affect how we anal
 
 This chart shows the distribution for the Climate Region. The trend for this chart seems to be that the Northeast region has the most outages recorded in the dataset. We'll have to keep this in mind for later: The dataset might be biased towards this region.
 
-## States
+### States
 <iframe
   src="Assets/univar_PostalCode.html"
   width="800"
@@ -62,8 +64,23 @@ This chart shows the distribution for the Climate Region. The trend for this cha
 
 Taking this at face value, this tells us that CA (California) had the most power outages out of all these states from 2000 to 2016. However, this could also have to do with how the data was collected. Either way, California seems very overrepresented in our dataset- we might have to control for this later on.
 
-## Outage Duration
+## Quantitative Variables:
+
+### Outage Duration
 
 
-## Months
+### Months
+
+### Years
+
+# Bivariate Analysis
+## Customers Affected and Duration
+
+## Cause and Duration 
+
+## Interseting Aggregates
+### dur_by_yr
+### Severity by Location
+### Map of Duration by Location
+
 
