@@ -20,4 +20,26 @@ While there were 55 variables (columns) in the dataset, only a few were relevant
 - `'CAUSE CATEGORY'`: The category of the outage's root cause, out of 7 potential categories
 - `'OUTAGE DURATION'`: The duration of the outage, in minutes
 - `'CUSTOMERS AFFECTED'`: The total number of people affected by the outage
--
+
+# Data Cleaning and Exploratory Data Analysis
+
+## Data Cleaning
+First some preliminary cleaning: we'll replace all the values that should be missing with NaN. Then, we'll convert all numerical values to floats to have consistency across our dataframe. Finally, we'll make sure all the values make sense, and correct them if not.
+The column names currently have periods and underscores instead of spaces. Let's replace these with spaces just to make things look a little prettier.
+
+Here is the head of our dataframe (Only included a few columns):
+```py
+print(df.head().to_markdown(index=False))
+```
+|    |   YEAR | U S STATE   | CLIMATE REGION     |   OUTAGE DURATION | CAUSE CATEGORY     |   CUSTOMERS AFFECTED |
+|---:|-------:|:------------|:-------------------|------------------:|:-------------------|---------------------:|
+|  1 |   2011 | Minnesota   | East North Central |              3060 | severe weather     |                70000 |
+|  2 |   2014 | Minnesota   | East North Central |                 1 | intentional attack |                  nan |
+|  3 |   2010 | Minnesota   | East North Central |              3000 | severe weather     |                70000 |
+|  4 |   2012 | Minnesota   | East North Central |              2550 | severe weather     |                68200 |
+|  5 |   2015 | Minnesota   | East North Central |              1740 | severe weather     |               250000 |
+
+# Univariate Analysis
+## 
+
+
