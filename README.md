@@ -1,12 +1,10 @@
-# Power Outages Analysis
+# Investigating Which Factors Affect Outage Duration
 ### Name(s): (Natasha Lie, TQ Zhang)
-### Website Link: (https://tqzhang04.github.io/outage-severity-analysis/)
-### Note to Suraj - sorry for the boring repo name
 # Introduction
 
 ## Background
 
-With people depending more and more on electrical implements inside their homes, power outages become more and more costly. They hinder people who work from their computers from doing any work, limit people's ability to communicate through the internet, and overall halt the daily lives of anyone unlucky enough to get caught. In cases of severe weather or emergency, power outages can even limit access to important utilities or the ability to reach important services. An important thing to know for those affected by outages would be how long outages will last, so that they know when they can return to their normal lives or how long they should be preparing to hunker down for.
+With people depending more and more on electrical implements inside their homes, power outages become more and more costly. They hinder the productivity of all computer users, limit people's ability to communicate through the internet, and overall halt the daily lives of anyone unlucky enough to get caught. In cases of severe weather or emergency, power outages can even limit access to important utilities or the ability to reach emergency services. An crucial thing to know for those affected by outages would be how long outages will last, so that they know when they can return to their normal lives or how long they should be preparing to hunker down for.
 
 ## Our Question
 
@@ -14,27 +12,27 @@ In our analysis, we investigated the question: **Which factors contribute the mo
 
 ## Our Dataset
 
-To perform this analyis, we used the data from major power outages in the continental United States, ranging from January of 2000 to July of 2016. It contains data on the severity of outages, as well as their start and restoration dates, causes, locations, and more location-specific information. This dataset has 55 variables and 1,534 observations, where each observation corresponds to a different outage.
+To perform this analysis, we used the data from major power outages in the continental United States, ranging from January of 2000 to July of 2016. Our dataset contains data on the severity of outages, as well as their start and restoration dates, causes, locations, and more location-specific information. **This dataset has 55 variables (columns) and 1,534 observations (rows), where each observation corresponds to a different outage.**
 
 While there were 55 variables (columns) in the dataset, only a few were relevant to our analysis. These variables, and short descriptions, are listed below:
 
 - `'YEAR'`: The year in which the outage happened
 - `'MONTH'`: The month in which the outage happened
-- `'U.S. STATE'`: The state in which the outage occured
+- `'U.S. STATE'`: The state in which the outage occurred
 - `'CAUSE CATEGORY'`: The category of the outage's root cause, out of 7 potential categories
 - `'OUTAGE DURATION'`: The duration of the outage, in minutes
 - `'CUSTOMERS AFFECTED'`: The total number of people affected by the outage
+- `'TOTAL CUSTOMERS'`: Annual number of total customers served in the state in which the outage occurred
+- `'DEMAND LOSS MW'`: The amount of peak demand lost during the outage in Megawatts
 
 # Data Cleaning and Exploratory Data Analysis
 
 ## Data Cleaning
-First some preliminary cleaning: we'll replace all the values that should be missing with NaN. Then, we'll convert all numerical values to floats to have consistency across our dataframe. Finally, we'll make sure all the values make sense, and correct them if not.
-The column names currently have periods and underscores instead of spaces. Let's replace these with spaces just to make things look a little prettier.
+First some preliminary cleaning: we replaced all the values that contained "NA" with actual NaN values. Then, we converted all numerical values to floats to have consistency across our dataframe. Finally, we made sure all the values make sense, and corrected them if not. This included removing outages with extreme durations (over a week) and reducing the `'CUSTOMERS AFFECTED'` column to contain values less than or equal to the `'TOTAL CUSTOMERS'` column. 
+The column names had periods and underscores instead of spaces. We replaced these with spaces just to make things look a little prettier and standardize formatting.
 
-Here is the head of our dataframe (Only included a few columns):
-```py
-print(df.head().to_markdown(index=False))
-```
+Here is the head of our dataframe after cleaning (Only included a few relevant columns):
+
 
 |   YEAR | U S STATE   | CLIMATE REGION     |   OUTAGE DURATION | CAUSE CATEGORY     |   CUSTOMERS AFFECTED |
 |-------:|:------------|:-------------------|------------------:|:-------------------|---------------------:|
@@ -56,7 +54,7 @@ Which regions are most represented in our dataset? This could affect how we anal
   frameborder="0"
 ></iframe>
 
-This chart shows the distribution for the Climate Region. The trend for this chart seems to be that the Northeast region has the most outages recorded in the dataset. We'll have to keep this in mind for later: The dataset might be biased towards this region.
+This chart shows the distribution for the Climate Region. The trend for this chart seems to be that the Northeast region has the most outages recorded in the dataset. This could be because the Northeast Region is more prone to outages due to severe weather/climate. We'll have to keep this in mind for later: The dataset might be biased towards this region.
 
 ### States
 <iframe
@@ -66,9 +64,9 @@ This chart shows the distribution for the Climate Region. The trend for this cha
   frameborder="0"
 ></iframe>
 
-Taking this at face value, this tells us that CA (California) had the most power outages out of all these states from 2000 to 2016. However, this could also have to do with how the data was collected. Either way, California seems very overrepresented in our dataset- we might have to control for this later on.
+This shows the distribution of the number of recorded power outages for each State. Taking this at face value, this tells us that CA (California) had the most power outages out of all these states from 2000 to 2016. However, this could also have to do with how the data was collected - maybe more California simply had more records of their outages. Either way, California seems very overrepresented in our dataset.
 
-## Quantitative Variables:
+### Quantitative Variables:
 ### Months
 Plotting the distribution of months will give us an idea of when outages are most common.
 
@@ -79,7 +77,7 @@ Plotting the distribution of months will give us an idea of when outages are mos
   frameborder="0"
 ></iframe>
 
-This chart is Month distribution. As we can see, the number of outages peaks around the summer months.
+This chart shows the distribution for the number of outages for each month. As we can see, the number of outages peaks around the summer months.
 
 ### Years
 Has the number of outages been on the rise? Plotting the distribution of years might give us some insights.
@@ -91,7 +89,7 @@ Has the number of outages been on the rise? Plotting the distribution of years m
   frameborder="0"
 ></iframe>
 
-This plot shows us the distribution of years in our data. There seems to have been a peak in outage counts in 2011, with a significant jump in the number of outages. The main takeaway, however, is that not all years are represented equally in our data; If we do analysis based on time later on, we'll have to keep this in mind.
+This plot shows us the distribution of years in our data. There seems to have been a peak in outage counts in 2011, with a significant jump in the number of outages. The main takeaway, however, is that not all years are represented equally in our data.
 
 ### Outage Duration
 Since outage duration is what we'll ultimately be looking at, we should look at its distribution here too.
@@ -102,7 +100,7 @@ Since outage duration is what we'll ultimately be looking at, we should look at 
   frameborder="0"
 ></iframe>
 
-From this graph, it's pretty obvious that outage duration is severely right-skewed. This means while most outages are short, there are some lasting tens of thousands of minutes (10k minutes is about a week), with one outage lasting 108k minutes. 
+This plot shows the distribution of outage durations. From this graph, it's pretty obvious that outage duration is severely right-skewed. This means while most outages are short, there are some lasting tens of thousands of minutes (10k minutes is about a week), with one outage lasting 108k minutes. 
 
 ## Bivariate Analysis
 ### Customers Affected and Duration
@@ -113,7 +111,7 @@ Does it take longer to get electrical grids back up if there are more people aff
   height="600"
   frameborder="0"
 ></iframe>
-There seems to be a very weak, but positive, correlation. However, it's really too weak to tell us much about actual effects.
+There seems to be a very weak, but positive, correlation. This could mean that, as we expected, the more people are affected, the longer it takes the outage to get fixed.
 
 ### Cause and Duration 
 Do outages caused by different things take longer to fix? Intuition tells us yes: Things that had more severe causes might take longer to repair.
@@ -125,7 +123,7 @@ Do outages caused by different things take longer to fix? Intuition tells us yes
   frameborder="0"
 ></iframe>
 
-Looking at this, it looks like fuel supply emergencies caused the longest durations, but also had the largest variance. Severe weather also caused pretty substantial outages.
+This plot shows the distribution of outage duration for each cause category. Looking at this, it looks like fuel supply emergencies caused the longest durations, but also had the largest variance. Severe weather also caused pretty substantial outages.
 
 ## Interesting Aggregates
 ### Duration by Year
@@ -224,6 +222,13 @@ Let's run the same test on some other columns, to see if the missingness in Dura
 
 We can see that the distribution of month looks about the same regardless of the missingness of Duration. Let's see if that tiny difference is significant.
 
+H0: The distribution of Month is the same for rows that are missing Outage Duration and rows that are not missing Outage Duration.
+
+Ha: The distribution of Month is different for rows that are missing Outage Duration and rows that are not missing Outage Duration.
+
+Test Statistic: The Total Variation Distance between the distributions of Month for rows missing Outage Duration and rows not missing Outage Duration.
+Significance level:  𝛼=0.05
+
 Our results: 
 P-value: 0.858
 
@@ -243,7 +248,6 @@ Before running our hypothesis test, let's take a look at the data and see how di
   frameborder="0"
 ></iframe>
 
-Our Results:
 
 Observed Difference: 3005.622585762335
 
@@ -273,19 +277,19 @@ Our Results:
 
 P-value: 0.0
 
-From the results of our permutation test, we can conclude that we reject the null hypothesis. The mean duration in the East North Central region is significantly different from the mean duration in other regions.
+From the results of our permutation test, we can conclude that we reject the null hypothesis. There is significant evidence that the mean duration in the East North Central region is higher than the mean duration in other regions.
 
 # Framing a Prediction Problem
-Our prediction problem: Predict the severity (measured in Outage Duration) of an outage by looking at data from any of the cause columns. To solve this problem, we will be using regression, since we want to predict the duration, not classify the data. The response variable is Outage Duration. To evaluate our model, we will be using  R^2, since it is more straightforward metric, where higher values are better (as opposed to RMSE, where lower error is better).
+**Our prediction problem: Predict the severity (measured in Outage Duration) of an outage by looking at data from any of the cause columns.** To solve this problem, we will be using regression, since we want to predict the duration, not classify the data. The response variable is Outage Duration. To evaluate our model, we will be using  R², since it is more straightforward metric, where higher values are better (as opposed to RMSE, where lower error is better). At the time of prediction, we would know the year and month of the outage as well as have a general idea of how many customers were affected. We would also know where the outage happened, cause of outage, and the amount of demand lost. This is because the electric company would likely have records of how many customers they serve under each grid as well as how much demand is usually generated.
 
 # Baseline Model
 For our baseline model, we’ll train a Linear Regression model to predict outage duration. This model will only have 2 features, and we’ll use it so we have something to which we can compare to compare future models. 
 
 The two features we’ve chosen for our baseline model were `’PCT LAND’`, which is the proportion of the land area of the entire continental US made up by the state the outage occurred in, and `’CUSTOMERS AFFECTED’`, the number of customers affected by the outage. We chose `’PCT LAND’` because when looking at the Pearson’s correlation of each numerical column with the `’OUTAGE DURATION’` column, `’PCT LAND’` had the highest absolute value (as shown below). `’CUSTOMERS AFFECTED’` was chosen also for its high correlation, and because, intuitively, it makes sense for outages that affected more customers to take longer to restore, an intuition that’s backed up by our analysis of the two variables in our EDA. **Both of these features are quantitative, and while Pct. Land is continuous, Customers is discrete.** No encodings were necessary, since both these features are numerical.
 
-We scored this model using the $R^2$ value, which measures how much of the variance in the observed data the model is able to capture in its predictions. We chose this metric because out of the two evaluation metrics for linear regression models, it is the more intuitive and easier to understand at a glance (higher means better). 
+We scored this model using the R² value, which measures how much of the variance in the observed data the model is able to capture in its predictions. We chose this metric because out of the two evaluation metrics for linear regression models, it is the more intuitive and easier to understand at a glance (higher means better). 
 
-|                    |   OUTAGE DURATION |
+| COLUMNS            | CORRELATION TO OUTAGE DURATION |
 |:-------------------|------------------:|
 | OUTAGE DURATION    |          1        |
 | PCT LAND           |          0.250879 |
@@ -299,7 +303,7 @@ We scored this model using the $R^2$ value, which measures how much of the varia
 | POPDEN RURAL       |          0.129671 |
 | POPPCT UC          |          0.127768 |
 
-The baseline model had an $R^2$ of 0.11 on the training set, and about 0.09 for the unseen data in the test set. Considering this metrics ranges between 0 and 1, this is extremely low performance. This is likely because although the features we selected had *relatively* high correlation coefficients when comparing to other variables, they were still only weakly correlated to the Outage Duration (both with Pearson’s r values of about 0.25). 
+The baseline model had an R² of 0.11 on the training set, and about 0.09 for the unseen data in the test set. Considering this metrics ranges between 0 and 1, this is extremely low performance. This is likely because although the features we selected had *relatively* high correlation coefficients when comparing to other variables, they were still only weakly correlated to the Outage Duration (both with Pearson’s r values of about 0.2). 
 
 Seeing as how this metric is low on both training and testing, this model is *underfit* to the data. This means to improve performance, we have to make our model more complex.
 
@@ -308,7 +312,7 @@ We first tried to maximize the performance using a Linear Regression model. We n
 
 An interesting finding was that after adding `’U S STATE’` as a feature, adding more variables that were state-specific, such as the `’PCT LAND’` variable used in the base model, ceased to help the model’s performance. This is likely because the values of these variables were unique to each state, not each outage. Every outage that occurred in the same state would share a value for these variables. Therefore, each of the vectors of these variables would simply be a linear combination of the one-hot-encoded state vectors.
 
-After some testing and iteration, the model that reached the highest performance was actually a Random Forest Regressor, which achieved an $R^2$ of 0.72 on the training set and 0.44 on the test set. We believe this is due to the Random Forest model’s ability to ignore the skewness of data and not require linearization to complete its task. Below, we outline the features used in this model and why we believe they improved our model’s performance.
+After some testing and iteration, the model that reached the highest performance was actually a Random Forest Regressor, which achieved an R² of 0.72 on the training set and 0.44 on the test set. We believe this is due to the Random Forest model’s ability to ignore the skewness of data and not require linearization to complete its task. Below, we outline the features used in this model and why we believe they improved our model’s performance.
 
 - `’CUSTOMERS AFFECTED’`: As stated before, Customers Affected had a relatively high correlation with Outage Duration. We believe this is because outages that affected more customers likely happened to a larger power grid or had more severe causes, both of which would make it harder to restore power. Also, duration was recorded as the time it took to restore power to *all customers*- naturally, if more customers were affected, it would take longer for this to be true.
 - `’DEMAND LOSS MW’`: This variable measured the amount of peak demand lost in an outage. Similarly to customers, if this number was higher, it would likely point to either a larger outage overall or a more severe cause, lengthening the time it takes to restore power.
@@ -322,9 +326,10 @@ After some testing and iteration, the model that reached the highest performance
 For the final model, we chose the following hyper-parameters:
 - `max_depth` = 10
 - `n_estimators` = 100
+
 We chose a max depth of 10 to prevent overfitting, and n_estimators of 100 was the default value. While we did use GridSearchCV to find the best hyperparameters, the parameters it chose seemed to lower the performance of the model overall, so the default values were kept for our final model.
 
-As mentioned, the $R^2$ of the final model reached 0.72 on the training set and 0.44 on the test set. This was an improvement of about 0.35 on the test set when compared to the baseline model, meaning its predictions captured about 35% more of the variance of Outage Durations.
+As mentioned, the R² of the final model reached 0.72 on the training set and 0.44 on the test set. This was an improvement of about 0.35 on the test set when compared to the baseline model, meaning its predictions captured about 35% more of the variance of Outage Durations.
 
 # Fairness Analysis
 In 2003, various geopolitical events, an increase in demand, and natural disasters caused the price for a barrel of crude oil in the US to rise to above $30, from its previous price of under $25. Under pressure from things like tensions in the Middle East and Hurricane Katrina, this price continued to skyrocket up until around 2008, causing a national [energy crisis](https://en.wikipedia.org/wiki/2000s_energy_crisis) (this was actually one of the many factors of the great recession, in 2007).
@@ -337,15 +342,15 @@ The changes in the `'TOTAL PRICE'` column, which measures the average price of e
 
 **Group Y:** Outages occurring during or after 2003
 
-**Evaluation metric:** $R^2$
+**Evaluation metric:** R²
 
-**Null Hypothesis:** Our model is fair. Its $R^2$ for power outages before 2003 and outages during or after 2003 are roughly the same, and any differences are due to random chance.
+**H0:** Our model is fair. Its R² for power outages before 2003 and outages during or after 2003 are roughly the same, and any differences are due to random chance.
 
-**Alternative Hypothesis:** Our model is unfair. Its $R^2$ for outages before 2003 is different from its $R^2$ for outages during or after 2003.
+**Ha:** Our model is unfair. Its R² for outages before 2003 is different from its R² for outages during or after 2003.
 
-**Test Statistic:** The absolute difference in $R^2$ of the model between observations in group X and observations in group Y.
+**Test Statistic:** The absolute difference in R² of the model between observations in group X and observations in group Y.
 
-**Significance level:** $\alpha = 0.05$
+**Significance level:** 𝛼 = 0.05
 ***
 
 <iframe
@@ -355,7 +360,9 @@ The changes in the `'TOTAL PRICE'` column, which measures the average price of e
   frameborder="0"
 ></iframe>
 
-After performing the permutation test, our p-value was around 0.36. Because the p-value is high, we fail to reject the null hypothesis and conclude that our model is fair. There is no sufficient evidence to prove that its performance for power outages before 2003 and those after 2003 are significantly different.
+**Observed Test Statistic:** 0.5
+
+After performing the permutation test, our p-value was around 0.3. Because the p-value is high, we fail to reject the null hypothesis and conclude that our model is fair. There is no sufficient evidence to prove that its performance for power outages before 2003 and those after 2003 are significantly different.
 
 
 
