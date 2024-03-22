@@ -234,7 +234,15 @@ Since we're interested in predicting Outage Duration as one metric for severity,
 
 Before running our hypothesis test, let's take a look at the data and see how different they really are.
 
+<iframe
+  src="Assets/hypothesis_region.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
 Our Results:
+
 Observed Difference: 3005.622585762335
 
 So in our observed data, there's a 3005 minute difference between the mean durations for ENC and other regions. Let's see if this difference is significant using a permutation test.
