@@ -354,7 +354,7 @@ The changes in the `'TOTAL PRICE'` column, which measures the average price of e
 ***
 
 <iframe
-  src="Assets/perm_plot.html"
+  src="Assets/perm_plot2.html"
   width="800"
   height="600"
   frameborder="0"
