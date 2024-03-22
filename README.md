@@ -170,6 +170,8 @@ Does the location have some correlation with outage severity (in terms of length
 | SC            |            2947.5 |            0.0605894 |
 | PA            |            2880   |            0.0209914 |
 
+This table was grouped by US State and aggregated by median. We can see that Eastern States seem to have longer median outage durations.
+
 ### Map of Duration by Location
 <iframe
   src="Assets/folium_map.html"
@@ -178,8 +180,54 @@ Does the location have some correlation with outage severity (in terms of length
   frameborder="0"
 ></iframe>
 
+The States in black are States with no recorded Outage Duration.
+
 # Missingness
-## two graphs for duration
+## NMAR Analysis
+One column that could be NMAR, meaning the missingness of the data depends on some property of the missing data itself, is `'OUTAGE RESTORATION DATE'`. This is because restoration dates could have started being recorded after a certain date. Restoration dates before that date would be missing. The additional data we would want to obtain would be when they started recording restoration dates, and the dates for outage restorations before they started recording restorations.
+## Missingness Dependency
+In our dataset, the `'OUTAGE DURATION'` column, which we are interested in as a measure of outage severity, is missing some of its values. This is problematic, and we want to know which missingness mechanism it follows so that we can impute values and closely replicate the missing data.
+
+One way to check this is to look at the difference in the distributions of a column between rows where duration is missing and rows where it's present. This is demonstrated for `'CAUSE CATEGORY'` below.
+
+<iframe
+  src="Assets/missing_diff_cause.html.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The rows of "severe weather" seem to be missing duration less, while "fuel supply emergency" seems to be missing it more. Based on this difference in distributions, we believe that the 'OUTAGE DURATION' Column is Missing at Random (MAR) depending on the 'CAUSE CATEGORY' column. To test this theory, we'll run a permutation test on these two columns.
+
+H0: The distribution of Cause Category is the same for rows that are missing Outage Duration and rows that are not missing Outage Duration.
+
+Ha: The distribution of Cause Category is different for rows that are missing Outage Duration and rows that are not missing Outage Duration.
+
+Test Statistic: The Total Variation Distance between the distributions of Cause Category for rows missing Outage Duration and rows not missing Outage Duration.
+Significance level:  𝛼=0.05
+
+Our results:
+P-value: 0.0
+
+Based on the results of our permutation test, we reject the null hypothesis. We rarely see TVD's as high as our observed. This tells us that the missingness of `'Outage Duration'` does depend on `'Cause Category'`, making it NMAR. To replace these values, we should employ probabilistic imputation, replacing each missing duration value with a randomly sampled value from the durations with the same cause category.
+
+Let's run the same test on some other columns, to see if the missingness in Duration is dependent on anything else.
+
+<iframe
+  src="Assets/missing_diff_month.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+We can see that the distribution of month looks about the same regardless of the missingness of Duration. Let's see if that tiny difference is significant.
+
+Our results: P-value: 0.858
+
+As expected, the p-value is high, beyond the chosen significance threshold of 0.05. This means that Outage Duration is Not Missing at Random (NMAR) in relation to Month.
+
+# Hypothesis Testing
+
 
 
 
