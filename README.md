@@ -44,7 +44,7 @@ print(df.head().to_markdown(index=False))
 Which regions are most represented in our dataset? This could affect how we analyze our data, if certain regions are overrepresented.
 
 <iframe
-  src="assets/univar_ClimateRegion.html"
+  src="Assets/univar_ClimateRegion.html"
   width="800"
   height="600"
   frameborder="0"
@@ -54,11 +54,16 @@ This chart shows the distribution for the Climate Region. The trend for this cha
 
 ## States
 <iframe
-  src="assets/univar_PostalCode.html"
+  src="Assets/univar_PostalCode.html"
   width="800"
   height="600"
   frameborder="0"
 ></iframe>
 
 Taking this at face value, this tells us that CA (California) had the most power outages out of all these states from 2000 to 2016. However, this could also have to do with how the data was collected. Either way, California seems very overrepresented in our dataset- we might have to control for this later on.
+
+## Outage Duration
+
+
+## Months
 
