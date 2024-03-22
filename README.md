@@ -1,4 +1,6 @@
 # Power Outages Analysis
+### Name(s): (Natasha Lie, TQ Zhang)
+### Website Link: (https://tqzhang04.github.io/outage-severity-analysis/)
 ### Note to Suraj - sorry for the boring repo name
 # Introduction
 
@@ -272,6 +274,88 @@ Our Results:
 P-value: 0.0
 
 From the results of our permutation test, we can conclude that we reject the null hypothesis. The mean duration in the East North Central region is significantly different from the mean duration in other regions.
+
+# Framing a Prediction Problem
+Our prediction problem: Predict the severity (measured in Outage Duration) of an outage by looking at data from any of the cause columns. To solve this problem, we will be using regression, since we want to predict the duration, not classify the data. The response variable is Outage Duration. To evaluate our model, we will be using  R^2, since it is more straightforward metric, where higher values are better (as opposed to RMSE, where lower error is better).
+
+# Baseline Model
+For our baseline model, we’ll train a Linear Regression model to predict outage duration. This model will only have 2 features, and we’ll use it so we have something to which we can compare to compare future models. 
+
+The two features we’ve chosen for our baseline model were `’PCT LAND’`, which is the proportion of the land area of the entire continental US made up by the state the outage occurred in, and `’CUSTOMERS AFFECTED’`, the number of customers affected by the outage. We chose `’PCT LAND’` because when looking at the Pearson’s correlation of each numerical column with the `’OUTAGE DURATION’` column, `’PCT LAND’` had the highest absolute value (as shown below). `’CUSTOMERS AFFECTED’` was chosen also for its high correlation, and because, intuitively, it makes sense for outages that affected more customers to take longer to restore, an intuition that’s backed up by our analysis of the two variables in our EDA. **Both of these features are quantitative, and while Pct. Land is continuous, Customers is discrete.** No encodings were necessary, since both these features are numerical.
+
+We scored this model using the $R^2$ value, which measures how much of the variance in the observed data the model is able to capture in its predictions. We chose this metric because out of the two evaluation metrics for linear regression models, it is the more intuitive and easier to understand at a glance (higher means better). 
+
+|                    |   OUTAGE DURATION |
+|:-------------------|------------------:|
+| OUTAGE DURATION    |          1        |
+| PCT LAND           |          0.250879 |
+| PCT WATER TOT      |          0.250865 |
+| YEAR               |          0.240186 |
+| CUSTOMERS AFFECTED |          0.21734  |
+| PROP CUST AFFECTED |          0.196802 |
+| UTIL CONTRI        |          0.141612 |
+| PC REALGSP USA     |          0.138206 |
+| RES CUST PCT       |          0.130159 |
+| POPDEN RURAL       |          0.129671 |
+| POPPCT UC          |          0.127768 |
+
+The baseline model had an $R^2$ of 0.11 on the training set, and about 0.09 for the unseen data in the test set. Considering this metrics ranges between 0 and 1, this is extremely low performance. This is likely because although the features we selected had *relatively* high correlation coefficients when comparing to other variables, they were still only weakly correlated to the Outage Duration (both with Pearson’s r values of about 0.25). 
+
+Seeing as how this metric is low on both training and testing, this model is *underfit* to the data. This means to improve performance, we have to make our model more complex.
+
+# Final Model
+We first tried to maximize the performance using a Linear Regression model. We noticed that many of our variables were severely skewed, so we applied various linearization transformations in order to account for this skew. We also tried binarizing the skewed variables in case the real distinction only lied in “high” or “low” values, rather than the exact values.
+
+An interesting finding was that after adding `’U S STATE’` as a feature, adding more variables that were state-specific, such as the `’PCT LAND’` variable used in the base model, ceased to help the model’s performance. This is likely because the values of these variables were unique to each state, not each outage. Every outage that occurred in the same state would share a value for these variables. Therefore, each of the vectors of these variables would simply be a linear combination of the one-hot-encoded state vectors.
+
+After some testing and iteration, the model that reached the highest performance was actually a Random Forest Regressor, which achieved an $R^2$ of 0.72 on the training set and 0.44 on the test set. We believe this is due to the Random Forest model’s ability to ignore the skewness of data and not require linearization to complete its task. Below, we outline the features used in this model and why we believe they improved our model’s performance.
+
+- `’CUSTOMERS AFFECTED’`: As stated before, Customers Affected had a relatively high correlation with Outage Duration. We believe this is because outages that affected more customers likely happened to a larger power grid or had more severe causes, both of which would make it harder to restore power. Also, duration was recorded as the time it took to restore power to *all customers*- naturally, if more customers were affected, it would take longer for this to be true.
+- `’DEMAND LOSS MW’`: This variable measured the amount of peak demand lost in an outage. Similarly to customers, if this number was higher, it would likely point to either a larger outage overall or a more severe cause, lengthening the time it takes to restore power.
+- `’YEAR’`: In our EDA, we found that the duration of outages seemed to decrease overall as years went on. This is likely due to newer, more modern electrical infrastructure making outages less severe, and allowing engineers to restore power quicker. Thus, knowing in which year an outage happened would help our model predict how long it lasted.
+- `’MONTH’`: We saw that more outages occurred in the summer months. This could be due to the fact that more people are home in summer, thus making there be more energy demand and more strain on electrical grids. Either way, knowing in which month the outage happened likely helps our model because outages were more common and lasted longer during the summer.
+- `’U S STATE’`: As seen in our EDA process, certain states had much longer median outage durations than other states. This is likely due to differences in electrical infrastructure, exposure to more extreme weather conditions, or differing protocols for resolving outages. For this reason, knowing which state an outage occurred in would have helped our model predict its duration.
+- `’CAUSE CATEGORY’`: Finally, the cause of an outage had a rather large impact on the outage’s duration. Outages in the “severe weather” category, for example, had a far longer median duration than outages caused by an “intentional attack”. This is likely due to differences in the severity of the cause: A hurricane that wipes out entire power grids or fuel supply emergencies that take months to resolve would cause far longer outages than things like small equipment failures, which likely have protocols in place for speedy resolution and restoration. Thus, knowing the broader cause category helped our model determine the duration.
+
+*Note that our two categorical features (State and Cause Category) were one-hot-encoded in our final pipeline to turn them into numerical data, since neither of them had any inherent order significant enough to make the decision to ordinally encode them.*
+
+For the final model, we chose the following hyper-parameters:
+- `max_depth` = 10
+- `n_estimators` = 100
+We chose a max depth of 10 to prevent overfitting, and n_estimators of 100 was the default value. While we did use GridSearchCV to find the best hyperparameters, the parameters it chose seemed to lower the performance of the model overall, so the default values were kept for our final model.
+
+As mentioned, the $R^2$ of the final model reached 0.72 on the training set and 0.44 on the test set. This was an improvement of about 0.35 on the test set when compared to the baseline model, meaning its predictions captured about 35% more of the variance of Outage Durations.
+
+# Fairness Analysis
+In 2003, various geopolitical events, an increase in demand, and natural disasters caused the price for a barrel of crude oil in the US to rise to above $30, from its previous price of under $25. Under pressure from things like tensions in the Middle East and Hurricane Katrina, this price continued to skyrocket up until around 2008, causing a national [energy crisis](https://en.wikipedia.org/wiki/2000s_energy_crisis) (this was actually one of the many factors of the great recession, in 2007).
+
+The changes in the `'TOTAL PRICE'` column, which measures the average price of energy per month in each state, reflect this change (as seen above). We want to know if our model is equally successful for outages that occured before this crisis (before 2003) and after (during or after 2003). 
+
+***
+#### **Fairness Analysis:** Is Our Model Fair for Outages Before and After the 2003 Energy Crisis?
+**Group X:** Outages occurring before 2003
+
+**Group Y:** Outages occurring during or after 2003
+
+**Evaluation metric:** $R^2$
+
+**Null Hypothesis:** Our model is fair. Its $R^2$ for power outages before 2003 and outages during or after 2003 are roughly the same, and any differences are due to random chance.
+
+**Alternative Hypothesis:** Our model is unfair. Its $R^2$ for outages before 2003 is different from its $R^2$ for outages during or after 2003.
+
+**Test Statistic:** The absolute difference in $R^2$ of the model between observations in group X and observations in group Y.
+
+**Significance level:** $\alpha = 0.05$
+***
+
+<iframe
+  src="Assets/perm_plot.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+After performing the permutation test, our p-value was around 0.36. Because the p-value is high, we fail to reject the null hypothesis and conclude that our model is fair. There is no sufficient evidence to prove that its performance for power outages before 2003 and those after 2003 are significantly different.
 
 
 
