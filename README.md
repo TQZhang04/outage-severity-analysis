@@ -336,7 +336,7 @@ In 2003, various geopolitical events, an increase in demand, and natural disaste
 
 The changes in the `'TOTAL PRICE'` column, which measures the average price of energy per month in each state, reflect this change (as seen above). We want to know if our model is equally successful for outages that occured before this crisis (before 2003) and after (during or after 2003). 
 
-***
+
 #### **Fairness Analysis:** Is Our Model Fair for Outages Before and After the 2003 Energy Crisis?
 **Group X:** Outages occurring before 2003
 
@@ -351,7 +351,7 @@ The changes in the `'TOTAL PRICE'` column, which measures the average price of e
 **Test Statistic:** The absolute difference in R² of the model between observations in group X and observations in group Y.
 
 **Significance level:** 𝛼 = 0.05
-***
+
 
 <iframe
   src="Assets/perm_plot2.html"
