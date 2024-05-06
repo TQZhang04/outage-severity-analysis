@@ -1,5 +1,5 @@
 # Investigating Which Factors Affect Outage Duration
-### Name(s): (Natasha Lie, TQ Zhang)
+### TQ Zhang, Natasha Lie
 # Introduction
 
 ## Background
